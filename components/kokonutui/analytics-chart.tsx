@@ -50,14 +50,17 @@ export default function AnalyticsChart({
   // Calculate responsive bar width based on container width
   const calculateBarWidth = () => {
     if (containerWidth <= 400) {
-      // Mobile: Show fewer bars on very small screens, with smaller width
-      return Math.max(4, Math.floor((containerWidth - 80) / (chartData.length <= 6 ? chartData.length : 6)) - 4);
+      // Mobile: Keep slim bars as they currently are
+      return Math.max(3, Math.floor((containerWidth - 90) / (chartData.length <= 6 ? chartData.length : 6)) - 5);
     } else if (containerWidth <= 640) {
       // Small devices
-      return Math.max(8, Math.floor((containerWidth - 100) / chartData.length) - 2);
+      return Math.max(6, Math.floor((containerWidth - 100) / chartData.length) - 3);
+    } else if (containerWidth <= 1024) {
+      // Medium screens - make wider
+      return Math.max(22, Math.min(32, Math.floor((containerWidth - 120) / chartData.length)));
     } else {
-      // Larger screens
-      return Math.max(18, Math.min(35, Math.floor((containerWidth - 120) / chartData.length)));
+      // Large screens - much wider bars
+      return Math.max(30, Math.min(50, Math.floor((containerWidth - 140) / chartData.length)));
     }
   };
   
@@ -115,7 +118,7 @@ export default function AnalyticsChart({
           <div className="absolute bottom-0 left-0 right-0 flex justify-between items-end h-full overflow-x-auto overflow-y-hidden">
             <div className="flex justify-between items-end min-w-full px-2">
               {responsiveData.map((item, index) => (
-                <div key={index} className="flex flex-col items-center mx-1 sm:mx-0.5">
+                <div key={index} className="flex flex-col items-center mx-1.5 sm:mx-1 md:mx-0.5 lg:mx-1">
                   {/* User stats - lighter color bars (top bars) */}
                   <div 
                     className="rounded-t-md bg-purple-400" 
