@@ -9,28 +9,31 @@ import {
   Menu,
   X
 } from "lucide-react"
-
 import Link from "next/link"
 import { useState, useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
+import { LucideIcon } from "lucide-react" // Import LucideIcon type
+
+// Define props type for NavItem
+interface NavItemProps {
+  href: string;
+  icon: LucideIcon; // Type for lucide-react icons
+  children: React.ReactNode;
+}
 
 export default function Sidebar() {
   const pathname = usePathname()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
   
-  // Check dark mode status
   useEffect(() => {
     const checkDarkMode = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'))
     }
-    
-    // Initial check
     checkDarkMode()
-    
-    // Set up mutation observer to watch for dark mode class changes
     const observer = new MutationObserver(mutations => {
       mutations.forEach(mutation => {
         if (mutation.attributeName === 'class') {
@@ -38,62 +41,42 @@ export default function Sidebar() {
         }
       })
     })
-    
     observer.observe(document.documentElement, { attributes: true })
-    
     return () => observer.disconnect()
   }, [])
   
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false)
   }, [pathname])
   
-  // Close mobile menu on window resize if wider than mobile
   useEffect(() => {
     const handleResize = () => {
+      setIsMobile(window.innerWidth < 1024)
       if (window.innerWidth >= 1024) {
         setMobileOpen(false)
       }
     }
-    
+    handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  // Function to toggle the sidebar
-  const toggleSidebar = () => {
-    setCollapsed(!collapsed)
-  }
+  const toggleSidebar = () => setCollapsed(!collapsed)
+  const toggleMobileMenu = () => setMobileOpen(!mobileOpen)
   
-  // Toggle mobile menu
-  const toggleMobileMenu = () => {
-    setMobileOpen(!mobileOpen)
-  }
-  
-  // Define gradient styles
   const gradientTextStyle = {
     backgroundImage: 'linear-gradient(to right, #FFFFFF, #8A27BA)',
     backgroundClip: 'text',
     WebkitBackgroundClip: 'text',
     color: 'transparent',
-  }
+  } as const // Type assertion for CSS properties
   
   const activeIndicatorStyle = {
     background: 'linear-gradient(to bottom, #7C3AED, #8A27BA)',
-  }
+  } as const
 
-  function NavItem({
-    href,
-    icon: Icon,
-    children,
-  }: {
-    href: string
-    icon: any
-    children: React.ReactNode
-  }) {
+  function NavItem({ href, icon: Icon, children }: NavItemProps) {
     const isActive = pathname === href
-
     return (
       <Link
         href={href}
@@ -121,7 +104,6 @@ export default function Sidebar() {
     )
   }
 
-  // Mobile menu toggle button
   const MobileMenuButton = () => (
     <button
       onClick={toggleMobileMenu}
@@ -135,8 +117,6 @@ export default function Sidebar() {
   return (
     <>
       <MobileMenuButton />
-      
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div 
@@ -150,18 +130,16 @@ export default function Sidebar() {
         )}
       </AnimatePresence>
       
-      {/* Sidebar */}
       <motion.nav
         initial={false}
         animate={{ 
           width: collapsed ? 76 : 256,
-          x: mobileOpen ? 0 : (window.innerWidth < 1024 ? -300 : 0)
+          x: mobileOpen ? 0 : (isMobile ? -300 : 0)
         }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={`fixed lg:relative h-screen border-r border-slate-200/80 dark:border-slate-700/30 bg-white/95 dark:bg-[#24223E]/95 backdrop-blur-sm shadow-sm z-40`}
+        className="fixed lg:relative h-screen border-r border-slate-200/80 dark:border-slate-700/30 bg-white/95 dark:bg-[#24223E]/95 backdrop-blur-sm shadow-sm z-40"
       >
         <div className="h-full flex flex-col overflow-hidden">
-          {/* Header */}
           <div className="flex items-center h-16 px-4 border-b border-slate-200/80 dark:border-slate-700/30">
             <motion.div 
               className="flex items-center"
@@ -207,7 +185,6 @@ export default function Sidebar() {
             )}
           </div>
 
-          {/* Nav items */}
           <div className="flex-1 overflow-y-auto py-3 scrollbar-thin scrollbar-thumb-slate-200 dark:scrollbar-thumb-slate-700/30 scrollbar-track-transparent">
             <div className="space-y-0.5">
               <NavItem href="/dashboard" icon={LayoutDashboard}>
@@ -224,43 +201,8 @@ export default function Sidebar() {
               </NavItem>
             </div>
           </div>
-
-          {/* User profile */}
-          {/* <div className="border-t border-slate-200/80 dark:border-slate-700/30 pt-2 pb-4 px-3 mt-auto">
-            <motion.div 
-              className={`p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-[#31305C]/30 transition-colors duration-200 cursor-pointer ${collapsed ? "justify-center" : ""}`}
-              animate={{ 
-                display: "flex",
-                alignItems: "center",
-                justifyContent: collapsed ? "center" : "flex-start"
-              }}
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center">
-                <CircleUser className="w-4 h-4" />
-              </div>
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.div 
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="ml-3 overflow-hidden"
-                  >
-                    <p className="text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">
-                      User Account
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                      user@lanstellar.com
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div> */}
         </div>
       </motion.nav>
     </>
   )
 }
-
