@@ -102,7 +102,7 @@ export default function Content() {
       </motion.div>
       
       {/* Two column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <motion.div variants={itemVariants} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <Wallet className="w-4 h-4 text-purple-600" />
@@ -122,7 +122,7 @@ export default function Content() {
             <List02 className="h-full" />
           </div>
         </motion.div>
-      </div>
+      </div> */}
     </motion.div>
   )
 }
