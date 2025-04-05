@@ -6,8 +6,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
   title: "Lanstellar Dashboard",
-  description: "A modern dashboard with theme switching",
-    generator: 'v0.dev'
+  description: "Lanstellar empowers its users to manage RWAs with confidence, positioning itself as a transformative force in the RWA sector.",
+    generator: 'Defidevrel.base.eth'
 }
 
 export default function RootLayout({
