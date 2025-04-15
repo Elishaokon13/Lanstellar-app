@@ -1,5 +1,5 @@
-import Settings from "@/components/lanstellarui/settings"
-import Layout from "@/components/lanstellarui/layout"
+import Settings from "@/components/kokonutui/settings"
+import Layout from "@/components/kokonutui/layout"
 
 export default function SettingsPage() {
   return (
